@@ -30,9 +30,10 @@ const mockFs = (on: On, files: Record<string, string>) => {
   })
 }
 
-const mockSession = (on: On) => {
+const mockSession = (on: On, dirs = { root: CWD, cwd: CWD }) => {
   on('session.start', ($, e) => ({ cwd: e.cwd }))
-  on('session.cwd', () => ({ value: CWD }))
+  on('session.root', () => ({ value: dirs.root }))
+  on('session.cwd', () => ({ value: dirs.cwd }))
   on('session.model', () => ({ value: 'claude-opus-5-5' }))
   on('session.usage', () => ({
     value: {
@@ -75,6 +76,30 @@ test('follows a branch switch made outside the session', async ($, on) => {
 
   const ui = await $.ui.mount({ ...HINT, surface: 'terminal' })
   expect(await ui.find({ type: 'Text', text: '~/projects/claude-mods (feature/x)' })).toBeDefined()
+  await ui.unmount()
+})
+
+test("stays on the session's root through a shell cd, follows /cd", async ($, on) => {
+  const dirs = { root: CWD, cwd: CWD }
+  mockSession(on, dirs)
+  const clock = mock.clock(on)
+  const OTHER = '/Users/ken/projects/other'
+  mockFs(on, {
+    [`${CWD}/.git/HEAD`]: 'ref: refs/heads/main\n',
+    [`${OTHER}/.git/HEAD`]: 'ref: refs/heads/dev\n',
+  })
+
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+  dirs.cwd = OTHER
+  await clock.advance(1000)
+  let ui = await $.ui.mount({ ...HINT, surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: '~/projects/claude-mods (main)' })).toBeDefined()
+  await ui.unmount()
+
+  dirs.root = OTHER
+  await clock.advance(1000)
+  ui = await $.ui.mount({ ...HINT, surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: '~/projects/other (dev)' })).toBeDefined()
   await ui.unmount()
 })
 
