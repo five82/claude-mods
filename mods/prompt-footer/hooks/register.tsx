@@ -92,11 +92,11 @@ export const register: Register = on => {
     const timer = $.clock.every(POLL_MS, () => void refreshBranch($))
     stopPolling = () => timer.cancel()
 
-    // Until the first request reports one, show the configured effort.
+    // Until the first request reports one, show the configured effort, never
+    // one kept from before (a resume or reload keeps $.state, and /effort may
+    // have changed it since).
     const { effortLevel } = await $.settings.read()
-    if (typeof effortLevel === 'string') {
-      await update($, effort, current => current ?? effortLevel)
-    }
+    await update($, effort, () => (typeof effortLevel === 'string' ? effortLevel : null))
 
     return next(e)
   })

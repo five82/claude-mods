@@ -1,6 +1,6 @@
 {
   "name": "prompt-footer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A minimal footer under the prompt: cwd and git branch, context usage, model and effort.",
   "types": "./types/index.d.ts"
 }

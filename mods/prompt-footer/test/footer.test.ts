@@ -30,7 +30,7 @@ const mockFs = (on: On, files: Record<string, string>) => {
   })
 }
 
-const mockSession = (on: On) => {
+const mockSession = (on: On, settings = (): object => ({ effortLevel: 'high' })) => {
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('session.cwd', () => ({ value: CWD }))
   on('session.model', () => ({ value: 'claude-opus-5-5' }))
@@ -41,7 +41,7 @@ const mockSession = (on: On) => {
       rateLimits: [],
     },
   }))
-  on('settings.read', () => ({ value: { effortLevel: 'high' } }))
+  on('settings.read', () => ({ value: settings() }))
   mock.env(on, { HOME: '/Users/ken' })
 }
 
@@ -92,4 +92,23 @@ test('shows a detached HEAD, and no branch outside a repository', async ($, on) 
   ui = await $.ui.mount({ ...HINT, surface: 'terminal' })
   expect(await ui.find({ type: 'Text', text: '~/projects/claude-mods' })).toBeDefined()
   await ui.unmount()
+})
+
+test('drops an effort kept in state from before the session started', async ($, on) => {
+  let settings: object = { effortLevel: 'high' }
+  mockSession(on, () => settings)
+  mock.clock(on)
+  mockFs(on, {})
+
+  // A first start leaves `high` in state; a resume or reload starts again.
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+  settings = {}
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ ...HINT, surface })
+    expect(await ui.find({ type: 'Text', text: 'claude-opus-5-5' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'high' })).toBeUndefined()
+    await ui.unmount()
+  }
 })
