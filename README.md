@@ -14,6 +14,7 @@ This repo is a Claude Code plugin marketplace. Add it once, then install the mod
 ```bash
 claude plugin marketplace add five82/claude-mods
 claude plugin install prompt-footer@claude-mods
+claude plugin install agent-skills@claude-mods
 ```
 
 Or from inside Claude Code:
@@ -21,14 +22,18 @@ Or from inside Claude Code:
 ```
 /plugin marketplace add five82/claude-mods
 /plugin install prompt-footer@claude-mods
+/plugin install agent-skills@claude-mods
 ```
 
-Restart Claude Code to load a newly installed mod. To update later:
+Restart Claude Code to load a newly installed mod. To update later, refresh the marketplace, update each installed mod, then restart Claude Code:
 
 ```bash
-claude plugin marketplace update claude-mods
-claude plugin update prompt-footer@claude-mods
+claude plugin marketplace update claude-mods     # refreshes the catalog only
+claude plugin update prompt-footer@claude-mods   # updates each installed mod
+claude plugin update agent-skills@claude-mods
 ```
+
+The first alone leaves the installed version unchanged; `claude plugin list` shows which version is installed.
 
 `claude plugin uninstall prompt-footer@claude-mods` removes one.
 
