@@ -1,0 +1,5 @@
+{
+  "name": "agent-skills",
+  "version": "0.1.1",
+  "description": "Loads skills from the cross-harness .agents/skills directories (project and ~) into Claude Code: listed for the model and runnable as /<skill>."
+}

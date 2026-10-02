@@ -9,6 +9,11 @@
       "name": "prompt-footer",
       "source": "./mods/prompt-footer",
       "description": "One line under the prompt: directory and git branch, context usage, model and effort."
+    },
+    {
+      "name": "agent-skills",
+      "source": "./mods/agent-skills",
+      "description": "Skills from the cross-harness .agents/skills directories (project and ~), listed for the model and runnable as /<skill>."
     }
   ]
 }

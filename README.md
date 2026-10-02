@@ -4,6 +4,7 @@ My [Claude Code](https://docs.claude.com/en/docs/claude-code) mods. Each folder 
 
 | Mod | What it does |
 | --- | --- |
+| [agent-skills](mods/agent-skills) | Skills from `.agents/skills` (project and `~`), the directory other agent harnesses share: listed for the model, runnable as `/<skill>` |
 | [prompt-footer](mods/prompt-footer) | One line under the prompt: directory and git branch · context usage · model · effort |
 
 ## Installing
