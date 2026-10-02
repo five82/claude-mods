@@ -12,7 +12,7 @@ It replaces Claude Code's hint line (`? for shortcuts`, `esc to interrupt`); the
 
 Effort shows the `effortLevel` setting until the first request, then the level each main-loop request actually uses.
 
-Needs `git` on `PATH` for the branch.
+The directory and branch follow pi's footer: the branch is read from `HEAD` of the repository found above the working directory (worktrees included), `detached` for a detached HEAD, and rechecked every second so a switch made elsewhere shows up. `git` is only run for reftable repositories, where `HEAD` doesn't name the branch.
 
 ```bash
 claude --plugin-dir mods/prompt-footer

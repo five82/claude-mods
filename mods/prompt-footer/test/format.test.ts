@@ -14,6 +14,9 @@ test('shortens the home directory to ~', () => {
   expect(shortenPath('/Users/ken', '/Users/ken')).toBe('~')
   expect(shortenPath('/Users/kenny/x', '/Users/ken')).toBe('/Users/kenny/x')
   expect(shortenPath('/tmp', undefined)).toBe('/tmp')
+  expect(shortenPath('/Users/ken/x/', '/Users/ken/')).toBe('~/x')
+  expect(shortenPath('/Users/ken/x/..', '/Users/ken')).toBe('~')
+  expect(shortenPath('/opt', '/')).toBe('~/opt')
 })
 
 test('formats token counts like pi', () => {

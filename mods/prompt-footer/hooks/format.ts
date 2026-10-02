@@ -1,15 +1,23 @@
 // Pure formatting for the footer, modelled on pi's coding-agent footer.
 
+import { normalize } from './paths'
+
+// pi's formatCwdForFooter: `~` for home and below it (both paths resolved
+// first), any other path as given.
 export const shortenPath = (cwd: string, home: string | undefined): string => {
   if (!home) {
     return cwd
   }
 
-  if (cwd === home) {
+  const resolvedCwd = normalize(cwd)
+  const resolvedHome = normalize(home)
+  if (resolvedCwd === resolvedHome) {
     return '~'
   }
 
-  return cwd.startsWith(`${home}/`) ? `~${cwd.slice(home.length)}` : cwd
+  const prefix = resolvedHome === '/' ? '/' : `${resolvedHome}/`
+
+  return resolvedCwd.startsWith(prefix) ? `~/${resolvedCwd.slice(prefix.length)}` : cwd
 }
 
 export const formatTokens = (n: number): string => {
