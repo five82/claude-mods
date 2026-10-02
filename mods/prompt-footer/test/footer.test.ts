@@ -1,5 +1,5 @@
 import { expect, mock, test } from 'claude-code/testing'
-import type { On } from 'claude-code/testing'
+import type { On, TestBody } from 'claude-code/testing'
 
 const CWD = '/Users/ken/projects/claude-mods'
 
@@ -30,7 +30,7 @@ const mockFs = (on: On, files: Record<string, string>) => {
   })
 }
 
-const mockSession = (on: On, settings = (): object => ({ effortLevel: 'high' })) => {
+const mockSession = (on: On) => {
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('session.cwd', () => ({ value: CWD }))
   on('session.model', () => ({ value: 'claude-opus-5-5' }))
@@ -41,7 +41,9 @@ const mockSession = (on: On, settings = (): object => ({ effortLevel: 'high' }))
       rateLimits: [],
     },
   }))
-  on('settings.read', () => ({ value: settings() }))
+  on('turn.step', async function* ($, e) {
+    return { turnId: e.turnId, index: e.index, answer: '', toolUses: [], stopReason: 'end_turn', usage: null }
+  })
   mock.env(on, { HOME: '/Users/ken' })
 }
 
@@ -56,7 +58,7 @@ test('draws location, context and model under the prompt', async ($, on) => {
     const ui = await $.ui.mount({ ...HINT, surface })
     expect(await ui.find({ type: 'Text', text: '~/projects/claude-mods (main)' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: '42%/200k' })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: 'claude-opus-5-5 · high' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: 'claude-opus-5-5' })).toBeDefined()
     await ui.unmount()
   }
 })
@@ -94,21 +96,33 @@ test('shows a detached HEAD, and no branch outside a repository', async ($, on) 
   await ui.unmount()
 })
 
-test('drops an effort kept in state from before the session started', async ($, on) => {
-  let settings: object = { effortLevel: 'high' }
-  mockSession(on, () => settings)
+// Runs one main-loop request at `effort`.
+const step = async ($: Parameters<TestBody>[0], effort: 'low' | 'medium' | 'high') => {
+  const stream = $.turn.step({ turnId: 't1', index: 0, model: 'claude-opus-5-5', effort, messageCount: 1 })
+  for await (const _ of stream) {
+  }
+}
+
+test('shows effort only once a request reports it, never a leftover', async ($, on) => {
+  mockSession(on)
   mock.clock(on)
   mockFs(on, {})
 
-  // A first start leaves `high` in state; a resume or reload starts again.
   await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
-  settings = {}
+  await step($, 'high')
+  // A resume or reload starts again with `high` kept in state.
   await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
 
   for (const surface of ['terminal', 'desktop'] as const) {
-    const ui = await $.ui.mount({ ...HINT, surface })
+    let ui = await $.ui.mount({ ...HINT, surface })
     expect(await ui.find({ type: 'Text', text: 'claude-opus-5-5' })).toBeDefined()
     expect(await ui.find({ type: 'Text', text: 'high' })).toBeUndefined()
     await ui.unmount()
+
+    await step($, 'medium')
+    ui = await $.ui.mount({ ...HINT, surface })
+    expect(await ui.find({ type: 'Text', text: 'claude-opus-5-5 · medium' })).toBeDefined()
+    await ui.unmount()
+    await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
   }
 })
