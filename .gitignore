@@ -130,3 +130,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+
+# Claude Code mods: written by the engine when a mod loads
+mods/*/tsconfig.json
+mods/*/.claude-plugin/types/
