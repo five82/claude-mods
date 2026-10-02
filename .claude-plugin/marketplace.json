@@ -14,6 +14,11 @@
       "name": "agent-skills",
       "source": "./mods/agent-skills",
       "description": "Skills from the cross-harness .agents/skills directories (project and ~), listed for the model and runnable as /<skill>."
+    },
+    {
+      "name": "show-work",
+      "source": "./mods/show-work",
+      "description": "Shows what Claude runs and injects, the way pi does: every tool call on its own row, the end of Bash output, per-call durations, injected context, and a spinner naming the running call."
     }
   ]
 }

@@ -6,6 +6,7 @@ My [Claude Code](https://docs.claude.com/en/docs/claude-code) mods. Each folder 
 | --- | --- |
 | [agent-skills](mods/agent-skills) | Skills from `.agents/skills` (project and `~`), the directory other agent harnesses share: listed for the model, runnable as `/<skill>` |
 | [prompt-footer](mods/prompt-footer) | One line under the prompt: directory and git branch · context usage · model · effort |
+| [show-work](mods/show-work) | Shows what Claude runs and injects, like pi: every read and search on its own row, the last 5 lines of Bash output, how long each call took, a dim line per context block or reminder the engine adds for the model, and a spinner naming the running call |
 
 ## Installing
 
@@ -15,6 +16,7 @@ This repo is a Claude Code plugin marketplace. Add it once, then install the mod
 claude plugin marketplace add five82/claude-mods
 claude plugin install prompt-footer@claude-mods
 claude plugin install agent-skills@claude-mods
+claude plugin install show-work@claude-mods
 ```
 
 Or from inside Claude Code:
@@ -23,6 +25,7 @@ Or from inside Claude Code:
 /plugin marketplace add five82/claude-mods
 /plugin install prompt-footer@claude-mods
 /plugin install agent-skills@claude-mods
+/plugin install show-work@claude-mods
 ```
 
 Restart Claude Code to load a newly installed mod. To update later, refresh the marketplace, update each installed mod, then restart Claude Code:
@@ -31,6 +34,7 @@ Restart Claude Code to load a newly installed mod. To update later, refresh the 
 claude plugin marketplace update claude-mods     # refreshes the catalog only
 claude plugin update prompt-footer@claude-mods   # updates each installed mod
 claude plugin update agent-skills@claude-mods
+claude plugin update show-work@claude-mods
 ```
 
 The first alone leaves the installed version unchanged; `claude plugin list` shows which version is installed.

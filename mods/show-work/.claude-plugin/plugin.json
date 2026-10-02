@@ -1,0 +1,6 @@
+{
+  "name": "show-work",
+  "version": "0.1.0",
+  "description": "Shows what Claude is running and adding to the model's context, the way pi does: every tool call on its own row, the end of Bash output, how long each call took, injected context, and a spinner naming the running call.",
+  "types": "./types/index.d.ts"
+}
