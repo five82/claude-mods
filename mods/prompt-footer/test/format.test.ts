@@ -7,6 +7,7 @@ import {
   locationLabel,
   modelLabel,
   shortenPath,
+  statusLabel,
 } from '../hooks/format'
 
 test('shortens the home directory to ~', () => {
@@ -36,4 +37,9 @@ test('labels context, model and location', () => {
   expect(modelLabel('claude-opus-5-5', null)).toBe('claude-opus-5-5')
   expect(locationLabel('~/x', 'main')).toBe('~/x (main)')
   expect(locationLabel('~/x', null)).toBe('~/x')
+})
+
+test('labels busy and idle apart', () => {
+  expect(statusLabel(true)).toBe('● working · esc to interrupt')
+  expect(statusLabel(false)).toBe('○')
 })

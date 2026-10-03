@@ -53,3 +53,8 @@ export const modelLabel = (model: string, effort: string | null): string =>
 
 export const locationLabel = (path: string, branch: string | null): string =>
   branch ? `${path} (${branch})` : path
+
+// Leads the line so busy and idle read apart at a glance, as pi's working
+// indicator does on its editor border.
+export const statusLabel = (isWorking: boolean): string =>
+  isWorking ? '● working · esc to interrupt' : '○'

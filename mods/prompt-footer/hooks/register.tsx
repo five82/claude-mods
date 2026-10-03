@@ -7,6 +7,7 @@ import {
   locationLabel,
   modelLabel,
   shortenPath,
+  statusLabel,
 } from './format'
 import { findGitPaths, headBranch } from './git'
 import type { GitFs, GitPaths } from './git'
@@ -128,17 +129,27 @@ export const register: Register = on => {
       read($, effort),
     ])
     const { percent, window } = usage.context
+    const { isWorking } = e.props
 
     return (
       <Box flexDirection="row">
+        {/* Only the location gives way to a narrow row; the rest never wraps. */}
+        <Box flexShrink={0}>
+          <Text dimColor={!isWorking} color={isWorking ? 'cyan' : undefined}>
+            {statusLabel(isWorking)}
+          </Text>
+          <Text dimColor> · </Text>
+        </Box>
         <Text dimColor wrap="truncate-end">
           {locationLabel(shortenPath(root, home), branchName)}
         </Text>
-        <Text dimColor> · </Text>
-        <Text dimColor={contextColor(percent) === undefined} color={contextColor(percent)}>
-          {contextLabel(percent, window)}
-        </Text>
-        <Text dimColor> · {modelLabel(model, effortLevel)}</Text>
+        <Box flexShrink={0}>
+          <Text dimColor> · </Text>
+          <Text dimColor={contextColor(percent) === undefined} color={contextColor(percent)}>
+            {contextLabel(percent, window)}
+          </Text>
+          <Text dimColor> · {modelLabel(model, effortLevel)}</Text>
+        </Box>
       </Box>
     )
   })

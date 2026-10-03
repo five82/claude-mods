@@ -8,7 +8,7 @@
     {
       "name": "prompt-footer",
       "source": "./mods/prompt-footer",
-      "description": "One line under the prompt: directory and git branch, context usage, model and effort."
+      "description": "One line under the prompt: busy or idle, directory and git branch, context usage, model and effort."
     },
     {
       "name": "agent-skills",

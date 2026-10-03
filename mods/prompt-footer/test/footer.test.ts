@@ -64,6 +64,25 @@ test('draws location, context and model under the prompt', async ($, on) => {
   }
 })
 
+test('marks a running turn, and idle apart from it', async ($, on) => {
+  mockSession(on)
+  mock.clock(on)
+  mockFs(on, {})
+
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    let ui = await $.ui.mount({ ...HINT, surface })
+    expect(await ui.find({ type: 'Text', text: '○' })).toBeDefined()
+    expect(await ui.find({ type: 'Text', text: '● working · esc to interrupt' })).toBeUndefined()
+    await ui.unmount()
+
+    ui = await $.ui.mount({ ...HINT, surface, props: { ...HINT.props, isWorking: true } })
+    expect(await ui.find({ type: 'Text', text: '● working · esc to interrupt' })).toBeDefined()
+    await ui.unmount()
+  }
+})
+
 test('follows a branch switch made outside the session', async ($, on) => {
   mockSession(on)
   const clock = mock.clock(on)

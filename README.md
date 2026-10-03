@@ -6,7 +6,7 @@ My [Claude Code](https://docs.claude.com/en/docs/claude-code) mods. Each folder 
 | --- | --- |
 | [agent-skills](mods/agent-skills) | Skills from `.agents/skills` (project and `~`), the directory other agent harnesses share: listed for the model, runnable as `/<skill>` |
 | [pi-prompt](mods/pi-prompt) | Swaps Claude Code's core system prompt (intro, system, doing tasks, actions, tools, tone) for [pi](https://github.com/earendil-works/pi/tree/main/packages/coding-agent)'s terse coding agent prompt, on every model; session sections (memory, environment, MCP instructions) stay. On by default; `/pi-prompt` toggles it, remembered across sessions |
-| [prompt-footer](mods/prompt-footer) | One line under the prompt: directory and git branch · context usage · model · effort |
+| [prompt-footer](mods/prompt-footer) | One line under the prompt: busy or idle (`● working · esc to interrupt` / `○`), directory and git branch · context usage · model · effort |
 | [show-work](mods/show-work) | Shows what Claude runs and injects, like pi: every read and search on its own row, the last 5 lines of Bash output, how long each call took, a dim line per context block or reminder the engine adds for the model, and a spinner naming the running call |
 
 ## Installing
