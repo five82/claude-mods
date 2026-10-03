@@ -19,6 +19,11 @@
       "name": "show-work",
       "source": "./mods/show-work",
       "description": "Shows what Claude runs and injects, the way pi does: every tool call on its own row, the end of Bash output, per-call durations, injected context, and a spinner naming the running call."
+    },
+    {
+      "name": "pi-prompt",
+      "source": "./mods/pi-prompt",
+      "description": "Replaces Claude Code's core system prompt with pi's coding agent prompt, for every model. /pi-prompt toggles it; the choice holds across sessions."
     }
   ]
 }

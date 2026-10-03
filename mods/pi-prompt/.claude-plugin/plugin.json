@@ -1,0 +1,5 @@
+{
+  "name": "pi-prompt",
+  "version": "0.1.0",
+  "description": "Replaces Claude Code's core system prompt with pi's coding agent prompt; /pi-prompt toggles it, remembered across sessions."
+}
