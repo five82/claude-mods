@@ -54,7 +54,23 @@ export const modelLabel = (model: string, effort: string | null): string =>
 export const locationLabel = (path: string, branch: string | null): string =>
   branch ? `${path} (${branch})` : path
 
+// `1 shell, 2 monitors`: background task types counted in first-seen order.
+export const tasksLabel = (types: readonly string[]): string => {
+  const counts = new Map<string, number>()
+  for (const type of types) {
+    counts.set(type, (counts.get(type) ?? 0) + 1)
+  }
+
+  return [...counts].map(([type, n]) => `${n} ${type}${n === 1 ? '' : 's'}`).join(', ')
+}
+
 // Leads the line so busy and idle read apart at a glance, as pi's working
-// indicator does on its editor border.
-export const statusLabel = (isWorking: boolean): string =>
-  isWorking ? '● working · esc to interrupt' : '○'
+// indicator does on its editor border. Idle with background work still
+// running gets its own mark, since that work will wake the session.
+export const statusLabel = (isWorking: boolean, tasks: readonly string[] = []): string => {
+  if (isWorking) {
+    return '● working · esc to interrupt'
+  }
+
+  return tasks.length ? `◐ ${tasksLabel(tasks)} running` : '○'
+}

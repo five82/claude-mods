@@ -42,4 +42,6 @@ test('labels context, model and location', () => {
 test('labels busy and idle apart', () => {
   expect(statusLabel(true)).toBe('● working · esc to interrupt')
   expect(statusLabel(false)).toBe('○')
+  expect(statusLabel(false, ['shell', 'monitor', 'shell'])).toBe('◐ 2 shells, 1 monitor running')
+  expect(statusLabel(true, ['shell'])).toBe('● working · esc to interrupt')
 })

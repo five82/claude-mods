@@ -15,6 +15,7 @@ import { join } from './paths'
 
 const branch = atom({ plugin: 'prompt-footer', key: 'branch' } as const, null)
 const effort = atom({ plugin: 'prompt-footer', key: 'effort' } as const, null)
+const tasks = atom({ plugin: 'prompt-footer', key: 'tasks' } as const, [])
 
 const POLL_MS = 1000
 
@@ -98,6 +99,8 @@ export const register: Register = on => {
     // No effort until a request reports one: settings and what $.state kept
     // from before (a resume, a reload) can both be stale after /effort.
     await update($, effort, () => null)
+    // Background tasks don't outlive the process that ran them.
+    await update($, tasks, () => [])
 
     return next(e)
   })
@@ -111,6 +114,15 @@ export const register: Register = on => {
     return yield* next(e)
   })
 
+  // The main loop stopped: note the background work still in flight. A task
+  // that finishes or reports wakes the session, and that turn's Stop updates it.
+  on('classic.Stop', async ($, e, next) => {
+    await update($, tasks, () => (e.background_tasks ?? []).map(task => task.type))
+    $.ui.invalidate('ui.render')
+
+    return next(e)
+  })
+
   // Context fill moved: redraw.
   on('session.measure', ($, e, next) => {
     $.ui.invalidate('ui.render')
@@ -120,13 +132,14 @@ export const register: Register = on => {
 
   on('ui.render', { component: 'PromptHint' }, async ($, e) => {
     const { Box, Text } = $.ui.resolve(e)
-    const [root, home, model, usage, branchName, effortLevel] = await Promise.all([
+    const [root, home, model, usage, branchName, effortLevel, taskTypes] = await Promise.all([
       $.session.root(),
       $.env.get('HOME').then(home => home || $.env.get('USERPROFILE')),
       $.session.model(),
       $.session.usage(),
       read($, branch),
       read($, effort),
+      read($, tasks),
     ])
     const { percent, window } = usage.context
     const { isWorking } = e.props
@@ -136,7 +149,7 @@ export const register: Register = on => {
         {/* Only the location gives way to a narrow row; the rest never wraps. */}
         <Box flexShrink={0}>
           <Text dimColor={!isWorking} color={isWorking ? 'cyan' : undefined}>
-            {statusLabel(isWorking)}
+            {statusLabel(isWorking, taskTypes)}
           </Text>
           <Text dimColor> · </Text>
         </Box>

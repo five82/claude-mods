@@ -83,6 +83,35 @@ test('marks a running turn, and idle apart from it', async ($, on) => {
   }
 })
 
+test('stays apart from idle while background tasks run', async ($, on) => {
+  mockSession(on)
+  mock.clock(on)
+  mockFs(on, {})
+  on('classic.Stop', () => ({}))
+  const task = (id: string, type: string) => ({ id, type, status: 'running', description: id })
+
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+  await $.classic.Stop({
+    stop_hook_active: false,
+    background_tasks: [task('a', 'shell'), task('b', 'monitor')],
+  })
+
+  for (const surface of ['terminal', 'desktop'] as const) {
+    let ui = await $.ui.mount({ ...HINT, surface })
+    expect(await ui.find({ type: 'Text', text: '◐ 1 shell, 1 monitor running' })).toBeDefined()
+    await ui.unmount()
+
+    ui = await $.ui.mount({ ...HINT, surface, props: { ...HINT.props, isWorking: true } })
+    expect(await ui.find({ type: 'Text', text: '● working · esc to interrupt' })).toBeDefined()
+    await ui.unmount()
+  }
+
+  await $.classic.Stop({ stop_hook_active: false, background_tasks: [] })
+  const ui = await $.ui.mount({ ...HINT, surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: '○' })).toBeDefined()
+  await ui.unmount()
+})
+
 test('follows a branch switch made outside the session', async ($, on) => {
   mockSession(on)
   const clock = mock.clock(on)
